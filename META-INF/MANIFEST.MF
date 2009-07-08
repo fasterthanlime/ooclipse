@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Ooclipse Plug-in
 Bundle-SymbolicName: ooclipse; singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 0.3.0
 Bundle-Activator: ooclipse.Activator
 Bundle-Vendor: Amos Wenger
 Require-Bundle: org.eclipse.ui,
@@ -11,3 +11,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Export-Package: ooclipse,
+ ooclipse.editors

@@ -7,7 +7,7 @@
       <editor
             name="Ooc Source Editor"
             extensions="ooc"
-            icon="icons/sample.gif"
+            icon="icons/llama-16x16.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="ooclipse.editors.OocEditor"
             id="ooclipse.editors.OocEditor">
