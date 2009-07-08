@@ -15,12 +15,12 @@ public class OocDocumentProvider extends FileDocumentProvider {
 		if (document != null) {
 			IDocumentPartitioner partitioner =
 				new FastPartitioner(
-					new PartitionScanner(),
+					new Scanner(),
 					new String[] {
-						PartitionScanner.KEYWORD,
-						PartitionScanner.STRING,
-						PartitionScanner.COMMENT,
-						PartitionScanner.XML_TAG,
+						Scanner.KEYWORD,
+						Scanner.STRING,
+						Scanner.COMMENT,
+						Scanner.TYPE,
 					});
 			partitioner.connect(document);
 			document.setDocumentPartitioner(partitioner);

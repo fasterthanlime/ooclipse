@@ -13,8 +13,7 @@ import org.eclipse.swt.SWT;
 
 public class OocConfiguration extends SourceViewerConfiguration {
 	private DoubleClickStrategy doubleClickStrategy;
-	private OocTagScanner tagScanner;
-	private OocScanner scanner;
+	private Scanner scanner;
 	private ColorManager colorManager;
 
 	public OocConfiguration(ColorManager colorManager) {
@@ -25,9 +24,10 @@ public class OocConfiguration extends SourceViewerConfiguration {
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
 		return new String[] {
 			IDocument.DEFAULT_CONTENT_TYPE,
-			PartitionScanner.COMMENT,
-			PartitionScanner.XML_TAG,
-			PartitionScanner.KEYWORD,
+			Scanner.KEYWORD,
+			Scanner.STRING,
+			Scanner.COMMENT,
+			Scanner.TYPE,
 		};
 	}
 	
@@ -40,9 +40,9 @@ public class OocConfiguration extends SourceViewerConfiguration {
 		return doubleClickStrategy;
 	}
 
-	protected OocScanner getOocScanner() {
+	protected Scanner getScanner() {
 		if (scanner == null) {
-			scanner = new OocScanner(colorManager);
+			scanner = new Scanner();
 			scanner.setDefaultReturnToken(
 				new Token(
 					new TextAttribute(
@@ -50,22 +50,12 @@ public class OocConfiguration extends SourceViewerConfiguration {
 		}
 		return scanner;
 	}
-	protected OocTagScanner getOocTagScanner() {
-		if (tagScanner == null) {
-			tagScanner = new OocTagScanner(colorManager);
-			tagScanner.setDefaultReturnToken(
-				new Token(
-					new TextAttribute(
-						colorManager.getColor(ColorConstants.TAG))));
-		}
-		return tagScanner;
-	}
 
 	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler = new PresentationReconciler();
 
-		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getOocScanner());
+		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getScanner());
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 
@@ -73,29 +63,29 @@ public class OocConfiguration extends SourceViewerConfiguration {
 			new NonRuleBasedDamagerRepairer(
 				new TextAttribute(
 					colorManager.getColor(ColorConstants.COMMENT)));
-		reconciler.setDamager(ndr, PartitionScanner.COMMENT);
-		reconciler.setRepairer(ndr, PartitionScanner.COMMENT);
+		reconciler.setDamager(ndr, Scanner.COMMENT);
+		reconciler.setRepairer(ndr, Scanner.COMMENT);
 		
 		ndr =
 			new NonRuleBasedDamagerRepairer(
 				new TextAttribute(
 					colorManager.getColor(ColorConstants.KEYWORD), null, SWT.BOLD));
-		reconciler.setDamager(ndr, PartitionScanner.KEYWORD);
-		reconciler.setRepairer(ndr, PartitionScanner.KEYWORD);
+		reconciler.setDamager(ndr, Scanner.KEYWORD);
+		reconciler.setRepairer(ndr, Scanner.KEYWORD);
 		
 		ndr =
 			new NonRuleBasedDamagerRepairer(
 				new TextAttribute(
 					colorManager.getColor(ColorConstants.STRING)));
-		reconciler.setDamager(ndr, PartitionScanner.STRING);
-		reconciler.setRepairer(ndr, PartitionScanner.STRING);
+		reconciler.setDamager(ndr, Scanner.STRING);
+		reconciler.setRepairer(ndr, Scanner.STRING);
 		
 		ndr =
 			new NonRuleBasedDamagerRepairer(
 				new TextAttribute(
 					colorManager.getColor(ColorConstants.TYPE), null, SWT.BOLD));
-		reconciler.setDamager(ndr, PartitionScanner.TYPE);
-		reconciler.setRepairer(ndr, PartitionScanner.TYPE);
+		reconciler.setDamager(ndr, Scanner.TYPE);
+		reconciler.setRepairer(ndr, Scanner.TYPE);
 
 		return reconciler;
 	}

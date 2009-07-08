@@ -8,9 +8,10 @@ import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
+import org.eclipse.jface.text.rules.WhitespaceRule;
 import org.eclipse.jface.text.rules.WordRule;
 
-public class PartitionScanner extends RuleBasedPartitionScanner {
+public class Scanner extends RuleBasedPartitionScanner {
 	
 	private final static String[] KEYWORDS = new String[] {
 		"class", "cover", "func", "abstract",
@@ -19,7 +20,7 @@ public class PartitionScanner extends RuleBasedPartitionScanner {
 		"continue", "fallthrough", "implement",
 		"override", "if", "else", "for", "while",
 		"do", "switch", "case", "version",
-		"return",
+		"return", "ctype", "typedef",
 	};
 	
 	private final static String[] TYPES = new String[] {
@@ -29,37 +30,34 @@ public class PartitionScanner extends RuleBasedPartitionScanner {
 	};
 	
 	public final static String KEYWORD = "__keyword";
-	public final static String TYPE = "__builtin_type";
+	public final static String TYPE = "__type";
 	public final static String COMMENT = "__comment";
-	public final static String STRING = "__string_literal";
-	public final static String XML_TAG = "__xml_tag";
+	public final static String STRING = "__string";
 
-	public PartitionScanner() {
+	public Scanner() {
 
 		IToken comment = new Token(COMMENT);
 		IToken stringLiteral = new Token(STRING);
-		//IToken tag = new Token(XML_TAG);
 		
 		IToken keyword = new Token(KEYWORD);
-        WordPredicateRule keywordRule = new WordPredicateRule(keyword);
+        WordPredicateRule wordRule = new WordPredicateRule(keyword);
         for(String kw: KEYWORDS) {
-			keywordRule.addWord(kw, keyword);
+			wordRule.addWord(kw, keyword);
 		}
         
         IToken type = new Token(TYPE);
-        WordPredicateRule typeRule = new WordPredicateRule(type);
         for(String ty: TYPES) {
-			typeRule.addWord(ty, type);
+			wordRule.addWord(ty, type);
 		}
 
 		setPredicateRules(new IPredicateRule[] {
-				keywordRule,
-				typeRule,
+				wordRule,
 				new SingleLineRule("//", null, comment),
+				new MultiLineRule("/**", "*/", comment),
 				new MultiLineRule("/*", "*/", comment),
 				new SingleLineRule("\"", "\"", stringLiteral, '\\'),
 				new SingleLineRule("'", "'", stringLiteral, '\\'),
-				//new TagRule(tag),
+				new WhitespacePredicateRule(new Token("__whitespace")),
 		});
 	}
 	
@@ -75,24 +73,40 @@ public class PartitionScanner extends RuleBasedPartitionScanner {
 	            public boolean isWordStart(char c) { 
 	            	return Character.isJavaIdentifierStart(c); 
 	            }
+	            
 	            public boolean isWordPart(char c) {   
 	            	return Character.isJavaIdentifierPart(c); 
 	            }
 	        });
-			fSuccessToken= successToken;
+			fSuccessToken = successToken;
 			addWord("/**/", fSuccessToken); //$NON-NLS-1$
 		}
 
-		/*
-		 * @see org.eclipse.jface.text.rules.IPredicateRule#evaluate(ICharacterScanner, boolean)
-		 */
 		public IToken evaluate(ICharacterScanner scanner, boolean resume) {
 			return super.evaluate(scanner);
 		}
 
-		/*
-		 * @see org.eclipse.jface.text.rules.IPredicateRule#getSuccessToken()
-		 */
+		public IToken getSuccessToken() {
+			return fSuccessToken;
+		}
+	}
+	
+	/**
+	 *
+	 */
+	static class WhitespacePredicateRule extends WhitespaceRule implements IPredicateRule {
+
+		private IToken fSuccessToken;
+
+		public WhitespacePredicateRule(IToken successToken) {
+			super(new WhitespaceDetector());
+			fSuccessToken = successToken;
+		}
+
+		public IToken evaluate(ICharacterScanner scanner, boolean resume) {
+			return super.evaluate(scanner);
+		}
+
 		public IToken getSuccessToken() {
 			return fSuccessToken;
 		}
