@@ -1,0 +1,10 @@
+ooclipse: ooc Eclipse plug-in
+=============================
+
+Still very basic, but does a pretty good job at syntaxic coloration
+(thanks to SWT/JFace/Eclipse's excellent toolkits).
+
+Feel free to contribute content assist, etc. =)
+
+Originally based on the XML Editor example, so there may be rests
+of the example in the code.
